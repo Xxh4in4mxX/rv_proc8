@@ -33,7 +33,7 @@ module m_proc8(w_clk);
     m_RF2 m5 (
         .w_clk(w_clk), .w_ra1(P1_ir[19:15]), .w_ra2(P1_ir[24:20]),
         .w_rd1(w_r1), .w_rd2(w_r2), .w_wa(P3_rd),
-        .w_we(!P3_s & !P3_b & !P3_v), .w_wd(w_rt)
+        .w_we(!P3_s & !P3_b & P3_v), .w_wd(w_rt)
     );
     m_adder m6 (
         .w_in1(w_imm),
@@ -51,7 +51,7 @@ module m_proc8(w_clk);
         {r_pc, P1_ir, P1_pc, P2_pc} <= {w_pcin, w_ir, r_pc, P1_pc};
         {P2_r1, P2_r2, P2_s2, P2_tpc} <= {w_r1, w_r2, w_s2, w_tpc};
         {P2_r, P2_s, P2_b, P2_ld} <= {w_r, w_s, w_b, w_ld};
-        {P2_rs2, P2_rs2, P2_rd} <= {P1_ir[24:15], P1_ir[11:7]};
+        {P2_rs2, P2_rs1, P2_rd} <= {P1_ir[24:15], P1_ir[11:7]};
         {P3_pc, P3_ld} <= {P2_pc, P2_ld};
         {P3_alu, P3_ldd, P3_rd} <= {w_alu, w_ldd, P2_rd};
     end
@@ -72,7 +72,7 @@ module m_proc8(w_clk);
         .w_out(w_rt)
     );
     // Forwarding condition: VALID added
-    wire w_f = !P3_s & !P3_b & !P3_rd & P3_v;
+    wire w_f = !P3_s & !P3_b & (P3_rd != 5'd0) & P3_v;
     m_mux m11 (
         .w_in1(P2_r1),
         .w_in2(w_rt),
